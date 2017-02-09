@@ -23,7 +23,7 @@ exports.compile = function (content, filename) {
     return info ? readWithCache(info, content) : content;
   } catch(e) {
     if (filename) {
-      e.message += `\nWhile processing file: ${filename}`;
+      e.message += 'While processing file: ' + filename;
     }
     throw e;
   }
