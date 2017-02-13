@@ -560,7 +560,7 @@ describe("compiler", function () {
 
     assert.strictEqual(
       namedAST.body[1].type,
-      "ClassExpression"
+      "ClassDeclaration"
     );
   });
 
