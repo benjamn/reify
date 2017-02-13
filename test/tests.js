@@ -525,7 +525,7 @@ describe("compiler", function () {
     import { compile } from "../lib/compiler.js";
 
     var code = [
-      "export default class {}"
+      "export default class C {}"
     ].join("\n");
 
     var result = compile(code, { ast: true });
