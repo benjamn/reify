@@ -521,6 +521,28 @@ describe("compiler", function () {
     isCallExprStmt(ast.body[5], "module", "export");
   });
 
+  it("should transform default export declaration to expression", function () {
+    import { compile } from "../lib/compiler.js";
+
+    var code = [
+      "export default class {}"
+    ].join("\n");
+
+    var result = compile(code, { ast: true });
+    var ast = result.ast;
+
+    if (ast.type === "File") {
+      ast = ast.program;
+    }
+
+    assert.strictEqual(ast.type, "Program");
+    assert.strictEqual(ast.body.length, 1);
+
+    assert.strictEqual(
+      ast.body[0].expression.arguments[1].right.type, "ClassExpression");
+
+  });
+
   it("should not get confused by shebang", function () {
     import { compile } from "../lib/compiler.js";
 
