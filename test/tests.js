@@ -523,24 +523,45 @@ describe("compiler", function () {
 
   it("should transform default export declaration to expression", function () {
     import { compile } from "../lib/compiler.js";
+    
+    function parse(code) {
+      var result = compile(code, { ast: true });
+      var ast = result.ast;
 
-    var code = [
+      if (ast.type === "File") {
+        ast = ast.program;
+      }
+
+      assert.strictEqual(ast.type, "Program");
+
+      return ast;
+    }
+
+    var anonCode = [
+      "export default class {}"
+    ].join("\n");
+
+    var anonAST = parse(anonCode);
+
+    assert.strictEqual(anonAST.body.length, 1);
+
+    assert.strictEqual(
+      anonAST.body[0].expression.arguments[1].right.type,
+      "ClassExpression"
+    );
+
+    var namedCode = [
       "export default class C {}"
     ].join("\n");
 
-    var result = compile(code, { ast: true });
-    var ast = result.ast;
+    var namedAST = parse(namedCode);
 
-    if (ast.type === "File") {
-      ast = ast.program;
-    }
-
-    assert.strictEqual(ast.type, "Program");
-    assert.strictEqual(ast.body.length, 1);
+    assert.strictEqual(namedAST.body.length, 2);
 
     assert.strictEqual(
-      ast.body[0].expression.arguments[1].right.type, "ClassExpression");
-
+      anonAST.body[1].expression.arguments[1].right.type,
+      "ClassExpression"
+    );
   });
 
   it("should not get confused by shebang", function () {
