@@ -15,7 +15,7 @@ var reifyVersion = require("../package.json")
 
 var DEFAULT_CACHE_DIR = ".reify-cache";
 
-exports.compile = function (content, filename) {
+exports.compile = function (content, filename, options) {
   if (filename === "repl") {
     // Treat the REPL as if there was no filename.
     filename = null;
@@ -27,13 +27,13 @@ exports.compile = function (content, filename) {
   }
 
   return filename
-    ? readWithCacheAndFilename(info, content, filename)
-    : readWithCache(info, content);
+    ? readWithCacheAndFilename(info, content, filename, options)
+    : readWithCache(info, content, options);
 };
 
-function readWithCacheAndFilename(info, content, filename) {
+function readWithCacheAndFilename(info, content, filename, options) {
   try {
-    return readWithCache(info, content);
+    return readWithCache(info, content, options);
   } catch (e) {
     e.message += ' while processing file: ' + filename;
     throw e;
@@ -46,7 +46,7 @@ var fallbackPkgInfo = {
   cache: Object.create(null)
 };
 
-function readWithCache(info, content) {
+function readWithCache(info, content, options) {
   var json = info && info.json;
   var reify = json && json.reify;
   var cacheFilename = getCacheFilename(content, reify);
@@ -72,7 +72,9 @@ function readWithCache(info, content) {
 
   if (reify && reify.parser) {
     compileOptions.parse = dynRequire(reify.parser).parse;
-  };
+  }
+
+  Object.assign(compileOptions, options);
 
   content = compile(content, compileOptions).code;
 

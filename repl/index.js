@@ -17,7 +17,7 @@ function wrap(name, optionsArgIndex) {
   vm[name] = function (code) {
     var options = arguments[optionsArgIndex];
     var filename = options && options.filename;
-    var args = [compile(code, filename)];
+    var args = [compile(code, filename, { generateLetDeclarations: false })];
     for (var i = 1; i < arguments.length; ++i) {
       args.push(arguments[i]);
     }
