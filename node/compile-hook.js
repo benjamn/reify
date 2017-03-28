@@ -1,5 +1,6 @@
 "use strict";
 
+const fs = require("fs");
 const compile = require("./caching-compiler.js").compile;
 const Module = require("./runtime.js").Module;
 const Mp = Module.prototype;
@@ -11,10 +12,31 @@ if (! _compile.reified) {
   (Mp._compile = function (content, filename) {
     return _compile.call(
       this,
-      // Don't touch the file unless reification is enabled for the
-      // package that contains the file.
-      compile(content, filename),
+      compile(content, getOptions(filename)),
       filename
     );
   }).reified = _compile;
+}
+
+function getOptions(filename) {
+  const options = { filename: filename };
+  const mtime = mtimeOrNull(filename);
+
+  if (mtime !== null) {
+    options.cacheKey = {
+      source: "Module.prototype._compile",
+      filename: filename,
+      mtime: mtime
+    };
+  }
+
+  return options;
+}
+
+function mtimeOrNull(path) {
+  try {
+    return fs.statSync(path).mtime;
+  } catch (e) {
+    return null;
+  }
 }

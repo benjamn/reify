@@ -17,27 +17,32 @@ const reifyVersion = require("../package.json")
 
 const DEFAULT_CACHE_DIR = ".reify-cache";
 
-exports.compile = (content, filename) => {
-  if (filename === "repl") {
+exports.compile = (content, options) => {
+  options = options || Object.create(null);
+
+  if (options.filename === "repl") {
     // Treat the REPL as if there was no filename.
-    filename = null;
+    options.filename = null;
   }
 
-  const pkgInfo = filename ? getPkgInfo(filename) : fallbackPkgInfo;
+  const pkgInfo = options.filename
+    ? getPkgInfo(options.filename)
+    : fallbackPkgInfo;
+
   if (! pkgInfo) {
     return content;
   }
 
-  return filename
-    ? readWithCacheAndFilename(pkgInfo, content, filename)
-    : readWithCache(pkgInfo, content);
+  return options.filename
+    ? readWithCacheAndFilename(pkgInfo, content, options)
+    : readWithCache(pkgInfo, content, options);
 };
 
-function readWithCacheAndFilename(pkgInfo, content, filename) {
+function readWithCacheAndFilename(pkgInfo, content, options) {
   try {
-    return readWithCache(pkgInfo, content);
+    return readWithCache(pkgInfo, content, options);
   } catch (e) {
-    e.message += ' while processing file: ' + filename;
+    e.message += ' while processing file: ' + options.filename;
     throw e;
   }
 }
@@ -48,10 +53,13 @@ const fallbackPkgInfo = {
   cache: Object.create(null)
 };
 
-function readWithCache(pkgInfo, content) {
+function readWithCache(pkgInfo, content, options) {
   const json = pkgInfo && pkgInfo.json;
   const reify = json && json.reify;
-  const cacheFilename = getCacheFilename(content, reify);
+
+  const cacheFilename =
+    getCacheFilename(options.cacheKey || content, reify);
+
   const absCachePath = typeof pkgInfo.cacheDir === "string" &&
     path.join(pkgInfo.cacheDir, cacheFilename);
 
@@ -103,16 +111,18 @@ function readFileOrNull(filename) {
   }
 }
 
-function getCacheFilename(content, reify) {
-  const hash = createHash("sha1")
-    .update(reifyVersion).update("\0")
-    .update(content).update("\0");
-
-  if (reify) {
-    hash.update(JSON.stringify(reify));
+function getCacheFilename() {
+  const args = [];
+  const argc = arguments.length;
+  for (let i = 0; i < argc; ++i) {
+    args.push(arguments[i]);
   }
 
-  return hash.digest("hex") + ".js";
+  return createHash("sha1")
+    .update(reifyVersion)
+    .update("\0")
+    .update(JSON.stringify(args))
+    .digest("hex") + ".js";
 }
 
 function getPkgInfo(filename) {
