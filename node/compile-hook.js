@@ -10,15 +10,17 @@ const Mp = Module.prototype;
 const _compile = Mp._compile;
 if (! _compile.reified) {
   (Mp._compile = function (content, filename) {
-    const stat = compiler.statOrNull(filename);
     return _compile.call(
       this,
       compiler.compile(content, {
         filename: filename,
-        cacheKey: stat && {
-          source: "Module.prototype._compile",
-          filename: filename,
-          mtime: stat.mtime.getTime()
+        makeCacheKey() {
+          const stat = compiler.statOrNull(filename);
+          return stat && {
+            source: "Module.prototype._compile",
+            filename: filename,
+            mtime: stat.mtime.getTime()
+          };
         }
       }),
       filename

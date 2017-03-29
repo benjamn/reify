@@ -57,8 +57,11 @@ function compileWithCache(pkgInfo, content, options) {
   const json = pkgInfo && pkgInfo.json;
   const reify = json && json.reify;
 
-  const cacheFilename =
-    getCacheFilename(options.cacheKey || content, reify);
+  const cacheKey = typeof options.makeCacheKey === "function"
+    ? options.makeCacheKey()
+    : options.cacheKey || content;
+
+  const cacheFilename = getCacheFilename(cacheKey, reify);
 
   const absCachePath = typeof pkgInfo.cacheDir === "string" &&
     path.join(pkgInfo.cacheDir, cacheFilename);
