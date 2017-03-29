@@ -18,7 +18,7 @@ const reifyVersion = require("../package.json")
 const DEFAULT_CACHE_DIR = ".reify-cache";
 
 exports.compile = (content, options) => {
-  options = options || Object.create(null);
+  options = Object.assign(Object.create(null), options);
 
   if (options.filename === "repl") {
     // Treat the REPL as if there was no filename.
@@ -34,13 +34,13 @@ exports.compile = (content, options) => {
   }
 
   return options.filename
-    ? readWithCacheAndFilename(pkgInfo, content, options)
-    : readWithCache(pkgInfo, content, options);
+    ? compileWithCacheAndFilename(pkgInfo, content, options)
+    : compileWithCache(pkgInfo, content, options);
 };
 
-function readWithCacheAndFilename(pkgInfo, content, options) {
+function compileWithCacheAndFilename(pkgInfo, content, options) {
   try {
-    return readWithCache(pkgInfo, content, options);
+    return compileWithCache(pkgInfo, content, options);
   } catch (e) {
     e.message += ' while processing file: ' + options.filename;
     throw e;
@@ -53,7 +53,7 @@ const fallbackPkgInfo = {
   cache: Object.create(null)
 };
 
-function readWithCache(pkgInfo, content, options) {
+function compileWithCache(pkgInfo, content, options) {
   const json = pkgInfo && pkgInfo.json;
   const reify = json && json.reify;
 
@@ -112,16 +112,21 @@ function readFileOrNull(filename) {
 }
 
 function getCacheFilename() {
-  const args = [];
-  const argc = arguments.length;
-  for (let i = 0; i < argc; ++i) {
-    args.push(arguments[i]);
+  const argCount = arguments.length;
+  const strings = new Array(argCount);
+  for (let i = 0; i < argCount; ++i) {
+    const arg = arguments[i];
+    if (typeof arg === "string") {
+      strings[i] = arg;
+    } else {
+      strings[i] = JSON.stringify(arg);
+    }
   }
 
   return createHash("sha1")
     .update(reifyVersion)
     .update("\0")
-    .update(JSON.stringify(args))
+    .update(strings.join("\0"))
     .digest("hex") + ".js";
 }
 
@@ -159,6 +164,7 @@ function statOrNull(filename) {
     return null;
   }
 }
+exports.statOrNull = statOrNull;
 
 function readPkgInfo(dir) {
   let pkg;
