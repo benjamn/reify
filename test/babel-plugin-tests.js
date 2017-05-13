@@ -8,7 +8,7 @@ import es2015Preset from "babel-preset-es2015";
 
 const filesToTest = Object.create(null);
 const methodNameRegExp =
-  /\bmodule\d*\.(?:watch|importSync|export(?:Default)?)\b/;
+  /\bmodule\d*\.(?:watch|import(?:Sync)|export(?:Default)?)\b/;
 
 Object.keys(files).forEach((absPath) => {
   const code = files[absPath];
@@ -16,7 +16,8 @@ Object.keys(files).forEach((absPath) => {
 
   // These files fail to transform with es2015 preset due to problems
   // unrelated to the functionality of the Reify Babel plugin.
-  if (relPath === "export/some.js"  ||
+  if (relPath === "export/from-extensions.js" ||
+      relPath === "export/some.js"  ||
       relPath === "export-tests.js" ||
       relPath === "import-tests.js" ||
       relPath === "setter-tests.js") {
@@ -42,6 +43,7 @@ describe("babel-plugin-transform-es2015-modules-reify", () => {
 
   Object.keys(filesToTest).forEach((relPath) => {
     const code = filesToTest[relPath];
+    const presets = [es2015Preset];
     const plugins = [[reifyPlugin, {
       generateLetDeclarations: true
     }]];
@@ -51,10 +53,7 @@ describe("babel-plugin-transform-es2015-modules-reify", () => {
     });
 
     it(`compiles ${relPath} with es2015`, () => {
-      check(code, {
-        plugins,
-        presets: [es2015Preset]
-      });
+      check(code, { plugins, presets });
     });
   });
 });
