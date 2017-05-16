@@ -11,8 +11,8 @@ import { files } from "./all-files.js";
 describe("compiler.transform", () => {
   function check(options) {
     Object.keys(files).forEach(function (absPath) {
-      if (typeof options.filter === "function" &&
-          ! options.filter(relative(__dirname, absPath))) {
+      if (typeof options.reject === "function" &&
+          options.reject(relative(__dirname, absPath))) {
         return;
       }
 
@@ -35,8 +35,9 @@ describe("compiler.transform", () => {
     check({
       ast: true,
       parse: require("../lib/parsers/babylon.js").parse,
-      filter: (relPath) => {
-        return relPath !== "export/from-extensions.js";
+      reject: (relPath) => {
+        return relPath === "export/extensions.js" ||
+               relPath === "import/extensions.js";
       }
     });
   }).timeout(5000);
