@@ -5,7 +5,7 @@ module.id = "<repl>";
 describe("Node REPL", () => {
   import "../repl";
   import { createContext } from "vm";
-  import { enable } from "../lib/runtime.js";
+  import { enable } from "../lib/runtime";
   import repl from "repl";
 
   it("should work with global context", (done) => {

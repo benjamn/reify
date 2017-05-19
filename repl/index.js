@@ -2,7 +2,7 @@
 
 const compile = require("../node/caching-compiler.js").compile;
 const isObject = require("../lib/utils.js").isObject;
-const runtime = require("../lib/runtime.js");
+const runtime = require("../lib/runtime");
 const setOptions = require("../node/compile-hook.js");
 const vm = require("vm");
 
