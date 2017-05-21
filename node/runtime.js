@@ -5,7 +5,7 @@ const utils = require("./utils.js");
 
 exports.enable = function (mod) {
   if (runtime.enable(mod)) {
-    mod.import = wrapImport(mod.import);
+    mod["import"] = wrapImport(mod["import"]);
     mod.importSync = wrapImportSync(mod.importSync);
     return true;
   }
