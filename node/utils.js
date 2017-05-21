@@ -4,7 +4,8 @@ const createHash = require("crypto").createHash;
 const data = require("./data.js");
 const fs = require("./fs.js");
 const path = require("path");
-const utils = require("../lib/utils.js");
+const resolveFilename = require("module")._resolveFilename;
+const utils = Object.assign(exports, require("../lib/utils.js"));
 
 const FastObject = require("../lib/fast-object.js");
 const PkgInfo = require("./pkg-info.js");
