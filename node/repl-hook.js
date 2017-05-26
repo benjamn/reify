@@ -1,14 +1,18 @@
 "use strict";
 
+const env = require("../lib/env.js");
 const utils = require("./utils.js");
 
 const dynModule = module.parent ? module : __non_webpack_module__;
 const rootModule = utils.getRootModule(dynModule);
+const isREPL = utils.isREPL(rootModule);
+const pkgName = env.REIFY_NAME || "reify";
+const pkgMain = isREPL ? utils.resolvePath(pkgName, rootModule) : "";
 
-if (utils.isREPL(rootModule)) {
-  // Enable import and export statements in the default Node REPL.
-  // Custom REPLs can still define their own eval functions that circumvent this
-  // compilation step, but that's a feature, not a drawback.
+if (isREPL && rootModule.children.some((mod) => mod.filename === pkgMain)) {
+  // Enable ESM in the default Node REPL by loading `reify` upon entering.
+  // Custom REPLs can still define their own eval functions to bypass this,
+  // but that's a feature, not a drawback.
   const compile = require("./caching-compiler.js").compile;
   const runtime = require("./runtime.js");
   const vm = require("vm");
