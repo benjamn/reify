@@ -56,7 +56,7 @@ wrapper.add(exts, ".js", function(func, pkgInfo, module, filename) {
 
   runtime.enable(module);
   module._compile(cacheValue, filename);
-  module.runModuleSetters();
+  module.runSetters();
 });
 
 const extsJsMap = wrapper.getMap(exts, ".js");
