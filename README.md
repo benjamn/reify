@@ -74,30 +74,24 @@ values change. Calling these setter functions one or more times is the key
 to implementing [*live bindings*](http://www.2ality.com/2015/07/es6-module-exports.html),
 as required by the ECMAScript 2015 specification.
 
-While most setter functions only need to know the value of the exported
-symbol, the name of the symbol is also provided as a second parameter
-after the value. This parameter becomes important for `*` imports (and `*`
-exports, but we'll get to that a bit later):
+Importing a namespace object is no different from importing a named
+export. The name is simply `"*"` instead of a legal identifier:
 
 ```js
 import * as utils from "./utils";
 ```
 becomes
 ```js
-const utils = Object.create(null);
+let utils;
 module.watch(require("./utils"), {
-  "*": (value, name) => {
-    utils[name] = value;
-  }
+  "*": ns => { utils = ns }
 });
 ```
 
-The setter function for `*` imports is called once for each symbol name
-exported from the `"./utils"` module. If any individual value happens to
-change after the call to `module.watch`, the setter function will be
-called again to update that particular value. This approach ensures that
-the actual `exports` object is never exposed to the caller of
-`module.watch`.
+Note that the `ns` object exposed here is `!== require("./utils")`, but
+instead a normalized view of the `require("./utils")` object. This
+approach ensures that the actual `exports` object is never exposed to the
+caller of `module.watch`.
 
 Notice that this compilation strategy works equally well no matter where
 the `import` declaration appears:
@@ -300,11 +294,14 @@ export * from "./module";
 becomes
 ```js
 module.watch(require("./module"), {
-  "*": (value, name) => {
-    exports[name] = value;
+  "*": ns => {
+    Object.assign(exports, ns);
   }
 });
 ```
+
+A simple `Object.assign` polyfill is provided in `lib/runtime/utils.js`,
+if necessary.
 
 Exporting named namespaces ([proposal](https://github.com/leebyron/ecmascript-export-ns-from)):
 ```js
@@ -312,10 +309,9 @@ export * as ns from "./module";
 ```
 becomes
 ```js
-exports.ns = Object.create(null);
 module.watch(require("./module"), {
-  "*": (value, name) => {
-    exports.ns[name] = value;
+  "*": ns => {
+    exports.ns = ns;
   }
 });
 ```
