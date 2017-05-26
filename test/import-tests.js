@@ -21,16 +21,17 @@ describe("import declarations", () => {
     import { default as abc4 } from "./misc/abc";
     import abc5, { a as ay, b as bee, c } from "./misc/abc";
 
-    assert.deepEqual(abc1, {
-      a: "a",
-      b: "b",
-      c: "c"
-    });
+    function check(ns) {
+      assert.strictEqual(ns.a, "a");
+      assert.strictEqual(ns.b, "b");
+      assert.strictEqual(ns.c, "c");
+    }
 
-    assert.deepEqual(abc1, abc2);
-    assert.deepEqual(abc1, abc3);
-    assert.deepEqual(abc1, abc4);
-    assert.deepEqual(abc1, abc5);
+    check(abc1);
+    check(abc2);
+    check(abc3);
+    check(abc4);
+    check(abc5);
   });
 
   it("should import module.exports as default, by default", () => {
@@ -79,8 +80,14 @@ describe("import declarations", () => {
     assert.strictEqual(typeof f, "function");
     assert.strictEqual(f(), "ok");
 
+    import * as fns from "./cjs/module-exports-function.js";
+    assert.strictEqual(fns.default, f);
+
     import n from "./cjs/module-exports-null.js";
     assert.strictEqual(n, null);
+
+    import * as nns from "./cjs/module-exports-null.js";
+    assert.strictEqual(nns.default, n);
 
     import o, { a, b, c } from "./cjs/module-exports-object.js";
     assert.deepEqual(o, { a: 1, b: 2, c: 3 });

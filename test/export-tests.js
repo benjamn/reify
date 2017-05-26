@@ -229,7 +229,9 @@ describe("export declarations", () => {
     assert.strictEqual(def, def3);
 
     function checkNS(ns) {
-      assert.deepEqual(ns, def);
+      assert.strictEqual(ns.a, def.a);
+      assert.strictEqual(ns.b, def.b);
+      assert.strictEqual(ns.c, def.c);
       assert.notStrictEqual(ns, def);
     }
 
