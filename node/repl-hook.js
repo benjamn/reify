@@ -10,9 +10,9 @@ if (utils.isREPL(rootModule)) {
   // Custom REPLs can still define their own eval functions that circumvent this
   // compilation step, but that's a feature, not a drawback.
   const compile = require("./caching-compiler.js").compile;
-  const runtime = require("./runtime.js");
   const vm = require("vm");
   const wrapper = require("./wrapper.js");
+  const Runtime = require("./runtime.js");
 
   wrapper.manage(vm, "createScript", function (func, code, options) {
     const pkgInfo = utils.getPkgInfo();
@@ -23,12 +23,15 @@ if (utils.isREPL(rootModule)) {
   wrapper.add(vm, "createScript", function (func, pkgInfo, code, options) {
     const cacheFilename = utils.getCacheFileName(null, code, pkgInfo);
     const cacheValue = pkgInfo.cache[cacheFilename];
-    code = typeof cacheValue === "string"
-      ? cacheValue
-      : compile(code, { cacheFilename, pkgInfo, repl: true });
+
+    code = utils.isObject(cacheValue)
+      ? cacheValue.code
+      : compile(code, { cacheFilename, pkgInfo, repl: true }).code;
+
+    code = '"use strict";' + code;
 
     return func.call(this, code, options);
   });
 
-  runtime.enable(rootModule);
+  Runtime.enable(rootModule);
 }
