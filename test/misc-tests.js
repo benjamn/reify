@@ -29,3 +29,18 @@ describe("built-in modules", () => {
     assert.ok(module instanceof M);
   });
 });
+
+describe("sealed module.exports objects", () => {
+  it("should not pose any problems", () => {
+    import { name, setName } from "./export/sealed.js";
+    import { relative } from "path";
+
+    assert.strictEqual(
+      relative(__dirname, name),
+      "export/sealed.js"
+    );
+
+    setName("oyez");
+    assert.strictEqual(name, "oyez");
+  });
+});
