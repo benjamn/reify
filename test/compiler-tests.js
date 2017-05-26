@@ -258,7 +258,7 @@ describe("compiler", () => {
 
     assert.strictEqual(anonAST.body.length - anonFirstIndex, 1);
     assert.strictEqual(
-      anonAST.body[anonFirstIndex].expression.arguments[1].type,
+      anonAST.body[anonFirstIndex].expression.arguments[0].type,
       "ClassExpression"
     );
 
