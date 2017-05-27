@@ -44,3 +44,23 @@ describe("sealed module.exports objects", () => {
     assert.strictEqual(name, "oyez");
   });
 });
+
+describe("exceptional imports", () => {
+  it("should not be triggered if unnamed", () => {
+    import { safe } from "./misc/risky-exports.js";
+    assert.strictEqual(safe, "safe");
+
+    import risky from "./misc/risky-exports.js";
+    assert.deepEqual(
+      Object.keys(risky).sort(),
+      ["safe", "unsafe"]
+    );
+
+    try {
+      import * as ns from "./misc/risky-exports.js";
+      throw new Error("unreached");
+    } catch (e) {
+      assert.strictEqual(e.message, "unsafe");
+    }
+  });
+});
