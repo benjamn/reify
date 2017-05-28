@@ -61,9 +61,9 @@ module.watch(require("./module"), {
   // The keys of this object literal are the names of exported symbols.
   // The values are setter functions that take new values and update the
   // local variables.
-  default: value => { a = value; },
-  b: value => { b = value; },
-  c: value => { d = value; },
+  default(value) { a = value; },
+  b(value) { b = value; },
+  c(value) { d = value; },
 });
 ```
 
@@ -84,7 +84,7 @@ becomes
 ```js
 let utils;
 module.watch(require("./utils"), {
-  "*": ns => { utils = ns }
+  "*"(ns) { utils = ns; }
 });
 ```
 
@@ -107,7 +107,7 @@ becomes
 if (condition) {
   let b;
   module.watch(require("./c"), {
-    a: value => { b = value; }
+    a(value) { b = value; }
   });
   console.log(b);
 }
@@ -281,8 +281,8 @@ export { a, b as c } from "./module";
 becomes
 ```js
 module.watch(require("./module"), {
-  a: value => { exports.a = value; },
-  b: value => { exports.c = value; },
+  a(value) { exports.a = value; },
+  b(value) { exports.c = value; },
 });
 ```
 
@@ -294,7 +294,7 @@ export * from "./module";
 becomes
 ```js
 module.watch(require("./module"), {
-  "*": ns => {
+  "*"(ns) {
     Object.assign(exports, ns);
   }
 });
@@ -329,9 +329,7 @@ export * as ns from "./module";
 becomes
 ```js
 module.watch(require("./module"), {
-  "*": ns => {
-    exports.ns = ns;
-  }
+  "*"(ns) { exports.ns = ns; }
 });
 ```
 
@@ -342,9 +340,9 @@ export a, { b, c as d } from "./module";
 becomes
 ```js
 module.watch(require("./module"), {
-  default: value => { exports.a = value },
-  b: value => { exports.b = value },
-  c: value => { exports.d = value }
+  default(value) { exports.a = value; },
+  b(value) { exports.b = value; },
+  c(value) { exports.d = value; }
 });
 ```
 
