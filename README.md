@@ -300,8 +300,27 @@ module.watch(require("./module"), {
 });
 ```
 
-A simple `Object.assign` polyfill is provided in `lib/runtime/utils.js`,
-if necessary.
+Though this code gives the basic idea of how `export * from "..."` is
+handled, in reality Reify generates the following code:
+
+```js
+module.watch(require("./module"), {
+  "*": module.makeNsSetter()
+});
+```
+
+The `module.makeNsSetter()` method call returns a function that takes a
+namespace object and copies its properties to `module.exports`. This
+version is better because
+
+1. the generated code is shorter,
+
+2. it doesn't rely on `Object.assign` (or a polyfill),
+
+3. it can be a little smarter about copying special properties such as
+   getters, and
+
+4. it reliably modifies `module.exports` instead of `exports`.
 
 Exporting named namespaces ([proposal](https://github.com/leebyron/ecmascript-export-ns-from)):
 ```js

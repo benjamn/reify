@@ -1,2 +1,2 @@
-"use strict";module.watch(require("./abc"),{"*":function(v){this.assign(exports,v)}},0);
+"use strict";module.watch(require("./abc"),{"*":module.makeNsSetter()},0);
 module.exportDefault("default");
