@@ -122,33 +122,13 @@ describe("compiler", () => {
     assert.ok(defaultStrict.startsWith('"use strict"'));
   });
 
-  it("should respect options.generateArrowFunctions", () => {
+  it("should always generate arrow functions", () => {
     import { compile } from "../lib/compiler.js";
 
-    const source = [
+    assert.ok(compile([
       'import def from "mod"',
       "export { def as x }"
-    ].join("\n");
-
-    const withoutArrow = compile(source, {
-      generateArrowFunctions: false
-    }).code;
-
-    assert.ok(! withoutArrow.includes("=>"));
-
-    const withArrow = compile(source, {
-      generateArrowFunctions: true
-    }).code;
-
-    assert.ok(withArrow.includes("=>"));
-
-    // No options.generateArrowFunctions is the same as
-    // { generateArrowFunctions: true }.
-    const defaultArrow = compile(
-      source
-    ).code;
-
-    assert.ok(defaultArrow.includes("=>"));
+    ].join("\n")).code.includes("=>"));
   });
 
   it("should respect options.generateLetDeclarations", () => {
