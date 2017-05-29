@@ -106,6 +106,11 @@ describe("import declarations", () => {
     assert.strictEqual(value, 10);
     assert.strictEqual(reset(), 0);
     assert.strictEqual(value, 0);
+
+    import * as ns1 from "./cjs/module-exports-esModule.js";
+    import * as ns2 from "./cjs/module-exports-esModule.js";
+    assert.strictEqual(typeof ns1, "object");
+    assert.strictEqual(ns1, ns2);
   });
 
   (canUseImportExtensions ? it : xit)(
