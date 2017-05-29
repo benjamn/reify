@@ -111,6 +111,11 @@ describe("import declarations", () => {
     import * as ns2 from "./cjs/module-exports-esModule.js";
     assert.strictEqual(typeof ns1, "object");
     assert.strictEqual(ns1, ns2);
+
+    import def from "./cjs/export-default-property.js";
+    import * as defNs from "./cjs/export-default-property.js";
+    assert.strictEqual(def.default, "oyez");
+    assert.strictEqual(def, defNs.default);
   });
 
   (canUseImportExtensions ? it : xit)(
