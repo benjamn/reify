@@ -64,3 +64,11 @@ describe("exceptional imports", () => {
     }
   });
 });
+
+describe("object-like module.exports", () => {
+  it("should expose their properties via `export * from ...`", () => {
+    import { union, forEach } from "./export/all-lodash.js";
+    assert.strictEqual(typeof union, "function");
+    assert.strictEqual(typeof forEach, "function");
+  });
+});
