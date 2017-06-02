@@ -49,27 +49,35 @@ Using Reify with other CommonJS module systems is possible, but not always
 easy. In order to work with Reify, the module system must
 
 * Have a `Module.prototype` object that all CommonJS `module` objects
-  inherit from. This is true for Node and Meteor, but not for Webpack or
-  Browserify.
+  inherit from, or at least a hook for adding Reify's runtime methods to
+  each `module` object.
 
-* Implement a `Module.prototype.resolve(id)` method that returns the same
-  absolute module identifier string as `require.resolve(id)`.
+* ~~Implement a `Module.prototype.resolve(id)` method that returns the
+  same absolute module identifier string as `require.resolve(id)`.~~ No
+  longer a requirement thanks to the `module.watch(require(id), ...)` API!
 
-* Call `module.runModuleSetters()` whenever a module finishes evaluating,
-  even if it was not compiled by Reify.
+* Call `module.runSetters()` whenever a module finishes evaluating, even
+  if it was not compiled by Reify.
 
 If your module system meets these requirements, then you can install the
 Reify runtime by calling
 
 ```js
-require("reify/lib/runtime").enable(module.constructor)
+require("reify/lib/runtime").enable(module)
 ```
 
-where `module.constructor` is the `Module` constructor function whose
-`Module.prototype` object supports the runtime API.
+for each `module` object. If your module system has a `Module.prototype`
+object, then you only need to call this function once:
+
+```js
+require("reify/lib/runtime").enable(module.constructor.prototype)
+```
+
+Note that `module.constructor` is an easy way to refer to the `Module`
+constructor.
 
 You can see how the Node runtime meets these requirements
-[here](https://github.com/benjamn/reify/blob/master/node/runtime.js).
+[here](https://github.com/benjamn/reify/blob/master/node/index.js).
 
 You can see how Meteor meets these requirements via the
 [`install`](https://github.com/benjamn/install) npm package
