@@ -34,14 +34,8 @@ npm install --save reify
 
 **Node**
 
-In Node.js, you can install the `Module.prototype.{import,export}` API by
-simply importing the
-[`reify/node/runtime`](https://github.com/benjamn/reify/blob/master/node/runtime.js)
-module:
-
-```js
-require("reify/node/runtime");
-```
+In Node, you can install the `Module.prototype.{watch,export,runSetters}`
+API simply by calling `require("reify/node")`.
 
 **Other module systems**
 
