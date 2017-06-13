@@ -58,7 +58,16 @@ describe("exceptional imports", () => {
 
     try {
       import * as ns from "./misc/risky-exports.js";
-      throw new Error("unreached");
+
+      assert.deepEqual(
+        Object.keys(ns).sort(),
+        ["default", "safe", "unsafe"]
+      );
+
+      // This assertion would fail if its arguments could be evaluated,
+      // but the ns.unsafe expression throws first.
+      assert.strictEqual(ns.unsafe, "moot");
+
     } catch (e) {
       assert.strictEqual(e.message, "unsafe");
     }
