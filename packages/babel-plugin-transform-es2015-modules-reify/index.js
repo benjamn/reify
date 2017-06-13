@@ -60,7 +60,9 @@ module.exports = function () {
       // identifier, because we may want to remap that reference to a
       // unique temporary variable, which would make it difficult to know
       // what the variable name should be.
-      node.callee.property.name === "import";
+      ["import", "importSync", "watch"].indexOf(
+        node.callee.property.name
+      ) >= 0
   }
 
   return {
