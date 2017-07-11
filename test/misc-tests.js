@@ -19,6 +19,11 @@ describe("spec compliance", () => {
     import value from "./export/cycle-a";
     assert.equal(value, true);
   });
+
+  it("should not export the default binding of namespace exports", () => {
+    import * as ns from "./misc/export-all.js";
+    ns.check();
+  });
 });
 
 describe("built-in modules", () => {
