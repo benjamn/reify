@@ -79,7 +79,7 @@ describe("export declarations", () => {
     assert.strictEqual(a, "a");
     assert.strictEqual(c(), "c");
     assert.strictEqual(v, "b");
-    assert.strictEqual(si, "cee");
+    assert.strictEqual(si, "c");
   });
 
   it("should be able to contain import declarations", () => {
