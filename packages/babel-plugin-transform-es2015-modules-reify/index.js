@@ -12,32 +12,22 @@ module.exports = function () {
       ibs.apply(this, arguments);
   };
 
-  function removeLiveBindingUpdateViolations(scope, opts) {
+  function removeLiveBindingUpdateViolations(scope) {
     Object.keys(scope.bindings).forEach(function (name) {
       var b = scope.bindings[name];
-      if (b.kind === "module") {
-        // Make the binding have a "let" or "var" kind from the
-        // perspective of Babel, since that's what Reify generates.
-        if (opts && opts.generateLetDeclarations === false) {
-          b.kind = "var";
-        } else {
-          b.kind = "let";
+      // Ignore constant violations from inside module.import(id, {...})
+      // callback functions, since they are necessary for updating
+      // imported symbols to simulate live bindings. The beauty of this
+      // solution is that babel-plugin-check-es2015-constants will still
+      // forbid any other reassignments of imported symbols, which
+      // enforces the const-ness of the live-bound variables. The
+      // Array#{splice,forEach,push} idiom is similar to Array#filter,
+      // except it preserves the original array object.
+      b.constantViolations.splice(0).forEach(function (cv) {
+        if (false && ! isPartOfImportMethodCall(cv)) {
+          b.constantViolations.push(cv);
         }
-
-        // Ignore constant violations from inside module.import(id, {...})
-        // callback functions, since they are necessary for updating
-        // imported symbols to simulate live bindings. The beauty of this
-        // solution is that babel-plugin-check-es2015-constants will still
-        // forbid any other reassignments of imported symbols, which
-        // enforces the const-ness of the live-bound variables. The
-        // Array#{splice,forEach,push} idiom is similar to Array#filter,
-        // except it preserves the original array object.
-        b.constantViolations.splice(0).forEach(function (cv) {
-          if (! isPartOfImportMethodCall(cv)) {
-            b.constantViolations.push(cv);
-          }
-        });
-      }
+      });
     });
   }
 
@@ -67,8 +57,27 @@ module.exports = function () {
 
   return {
     visitor: {
-      Scope: function (path) {
-        removeLiveBindingUpdateViolations(path.scope, this.opts);
+      Scope: {
+        enter: function (path) {
+          removeLiveBindingUpdateViolations(path.scope);
+        },
+
+        exit: function (path) {
+          var hasModuleBindings = Object.keys(
+            path.scope.bindings
+          ).some(function (name) {
+            return path.scope.bindings[name].kind === "module";
+          });
+
+          if (hasModuleBindings) {
+            // If the Scope previously had "module" bindings, we should
+            // have removed/converted them when calling compiler.transform
+            // in the Program visitor, so we need to re-crawl the Scope to
+            // fix the bindings.
+            path.scope.crawl();
+            removeLiveBindingUpdateViolations(path.scope);
+          }
+        }
       },
 
       Program: function (path) {
