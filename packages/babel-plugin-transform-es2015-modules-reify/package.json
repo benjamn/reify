@@ -27,6 +27,6 @@
     "reify": "^0.12.0"
   },
   "peerDependencies": {
-    "babel-types": "*"
+    "babel-types": "^6.26.0 || ^7.0.0-beta.0"
   }
 }
