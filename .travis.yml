@@ -1,6 +1,7 @@
 language: node_js
 
 node_js:
+  - "9"
   - "8"
   - "7"
   - "6"
@@ -8,3 +9,5 @@ node_js:
   - "4"
 
 sudo: false
+
+before_install: if [[ `npm -v | cut -d . -f 1` -lt 3 ]]; then npm i -g npm@3; fi

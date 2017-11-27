@@ -1,9 +1,18 @@
 module.exports = function () {
   var compiler = require("reify/lib/compiler.js");
   var parse = require("reify/lib/parsers/babylon.js").parse;
-  var validators = require("babel-types/lib/validators");
+
+  try {
+    // Prefer the new @babel/types package...
+    var validators = require("@babel/types/lib/validators");
+    var t = require("@babel/types");
+  } catch (e) {
+    // ... but tolerate the old babel-types package.
+    validators = require("babel-types/lib/validators");
+    t = require("babel-types");
+  }
+
   var ibs = validators.isBlockScoped;
-  var t = require("babel-types");
 
   // Allow t.isBlockScoped to return true for import-related nodes.
   validators.isBlockScoped = function (node) {
