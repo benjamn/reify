@@ -24,6 +24,6 @@
     "node": ">=4"
   },
   "dependencies": {
-    "reify": "^0.12.0"
+    "reify": "^0.13.0"
   }
 }
