@@ -14,6 +14,21 @@ describe("Node REPL", () => {
   import { enable } from "../lib/runtime";
   import repl from "repl";
 
+  let pendingTestCount = 2;
+
+  function finish(repl, done) {
+    if (typeof repl.close === "function") {
+      repl.close();
+    }
+
+    pendingTestCount = Math.max(pendingTestCount - 1, 0);
+    if (pendingTestCount === 0) {
+      process.stdin.end();
+    }
+
+    done();
+  }
+
   it("should work with global context", (done) => {
     const r = repl.start({ useGlobal: true });
     enable(r.context.module);
@@ -27,10 +42,7 @@ describe("Node REPL", () => {
       (err, result) => {
         // Use the globally defined assertStrictEqual to test itself!
         assertStrictEqual(typeof assertStrictEqual, "function");
-        if (typeof r.close === "function") {
-          r.close();
-        }
-        done();
+        finish(r, done);
       }
     );
   });
@@ -49,7 +61,7 @@ describe("Node REPL", () => {
         if (typeof r.close === "function") {
           r.close();
         }
-        done();
+        finish(r, done);
       }
     );
   });
