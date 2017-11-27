@@ -27,6 +27,9 @@ describe("Node REPL", () => {
       (err, result) => {
         // Use the globally defined assertStrictEqual to test itself!
         assertStrictEqual(typeof assertStrictEqual, "function");
+        if (typeof r.close === "function") {
+          r.close();
+        }
         done();
       }
     );
@@ -43,6 +46,9 @@ describe("Node REPL", () => {
       (err, result) => {
         // Use context.strictEqual to test itself!
         context.strictEqual(typeof context.strictEqual, "function");
+        if (typeof r.close === "function") {
+          r.close();
+        }
         done();
       }
     );
