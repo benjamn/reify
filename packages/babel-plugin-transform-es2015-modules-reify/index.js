@@ -1,25 +1,47 @@
-module.exports = function () {
-  var compiler = require("reify/lib/compiler.js");
-  var parse = require("reify/lib/parsers/babylon.js").parse;
+var namespace;
+var types;
 
+function tryScoped() {
+  namespace = require("@babel/types");
+  types = require("@babel/types");
+}
+
+function tryScopedLib() {
+  namespace = require("@babel/types/lib/validators");
+  types = require("@babel/types");
+}
+
+function tryUnscoped() {
+  namespace = require("babel-types/lib/validators");
+  types = require("babel-types");
+}
+
+[tryScoped,
+ tryScopedLib,
+ tryUnscoped
+].some(function (fn) {
   try {
-    // Prefer the new @babel/types package...
-    var validators = require("@babel/types/lib/validators");
-    var t = require("@babel/types");
+    fn();
   } catch (e) {
-    // ... but tolerate the old babel-types package.
-    validators = require("babel-types/lib/validators");
-    t = require("babel-types");
+    return false;
   }
 
-  var ibs = validators.isBlockScoped;
+  var ibs = namespace.isBlockScoped;
 
-  // Allow t.isBlockScoped to return true for import-related nodes.
-  validators.isBlockScoped = function (node) {
+  // Allow types.isBlockScoped to return true for import-related nodes.
+  namespace.isBlockScoped = function (node) {
     return node &&
-      t.isImportDeclaration(node) ||
+      types.isImportDeclaration(node) ||
       ibs.apply(this, arguments);
   };
+
+  return true;
+});
+
+module.exports = function (context) {
+  var compiler = require("reify/lib/compiler.js");
+  var parse = require("reify/lib/parsers/babylon.js").parse;
+  var t = types || context.types;
 
   function removeLiveBindingUpdateViolations(scope) {
     Object.keys(scope.bindings).forEach(function (name) {
