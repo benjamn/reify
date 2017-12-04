@@ -1,4 +1,5 @@
 const assert = require("assert");
+const nodeMajorVersion = parseInt(process.versions.node, 10);
 
 // Masquerade as the REPL module.
 module.filename = null;
@@ -22,7 +23,8 @@ describe("Node REPL", () => {
     }
 
     pendingTestCount = Math.max(pendingTestCount - 1, 0);
-    if (pendingTestCount === 0) {
+    if (pendingTestCount === 0 &&
+        nodeMajorVersion <= 4) {
       process.stdin.end();
     }
 
