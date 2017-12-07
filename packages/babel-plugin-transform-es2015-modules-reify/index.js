@@ -101,11 +101,6 @@ module.exports = function (context) {
           });
 
           if (hasModuleBindings) {
-            // If the Scope previously had "module" bindings, we should
-            // have removed/converted them when calling compiler.transform
-            // in the Program visitor, so we need to re-crawl the Scope to
-            // fix the bindings.
-            path.scope.crawl();
             removeLiveBindingUpdateViolations(path.scope);
           }
         }
