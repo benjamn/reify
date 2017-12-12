@@ -22,7 +22,13 @@ describe("spec compliance", () => {
 
   it("should not export the default binding of namespace exports", () => {
     import * as ns from "./misc/export-all.js";
-    ns.check();
+    ns.checkNoDefault();
+  });
+
+  it("... unless module.makeNsSetter(true) is used", () => {
+    import eff, * as ns from "./misc/export-all-with-default.js";
+    assert.strictEqual(eff(), "eff");
+    assert.strictEqual(ns.default, eff);
   });
 });
 
