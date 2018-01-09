@@ -307,4 +307,18 @@ describe("export declarations", () => {
     assert.strictEqual(d, _d);
     assert.strictEqual(e, _e);
   });
+
+  it("does not reorder export...from imports", () => {
+    import { aName, bName, cName } from "./export/from-ordering.js";
+    assert.strictEqual(aName, "from-ordering-a.js");
+    assert.strictEqual(bName, "from-ordering-b.js");
+    assert.strictEqual(cName, "from-ordering-c.js");
+
+    import { names } from "./export/from-ordering-common.js";
+    assert.deepEqual(names, [
+      "from-ordering-a.js",
+      "from-ordering-b.js",
+      "from-ordering-c.js",
+    ]);
+  });
 });
