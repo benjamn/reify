@@ -59,14 +59,17 @@ module.exports = function (context) {
             compiler.makeUniqueId("module", code);
         }
 
-        compiler.transform(
+        var result = compiler.transform(
           path.node,
           Object.assign(transformOptions, this.opts)
         );
 
-        // Invalidate all Scope objects, so that variable binding changes
-        // made by compiler.transform will be reflected accurately.
-        cache.clearScope();
+        // If the Reify compiler made any changes, invalidate all existing
+        // Scope objects, so that any variable binding changes made by
+        // compiler.transform will be reflected accurately.
+        if (! result.identical) {
+          cache.clearScope();
+        }
       }
     }
   };
