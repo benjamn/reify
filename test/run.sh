@@ -7,6 +7,10 @@ cd $(dirname "$0")
 TEST_DIR=$(pwd)
 PKG_DIR=$(dirname "$TEST_DIR")
 
+# Make Node complain about deprecations more loudly.
+export NODE_PENDING_DEPRECATION=1
+export NODE_OPTIONS="--trace-warnings"
+
 cd "$PKG_DIR"
 npm link packages/babel-plugin-transform-es2015-modules-reify
 cd node_modules
