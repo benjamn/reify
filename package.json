@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "acorn": "^5.2.1",
-    "minizlib": "^1.0.4",
     "semver": "^5.4.1"
   },
   "devDependencies": {

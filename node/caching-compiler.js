@@ -34,12 +34,10 @@ function compileAndWrite(content, options) {
   if (! result.identical) {
     // Only cache if the compiler made changes.
     const cacheFilePath = path.join(options.cachePath, options.cacheFilename);
-    const isGzipped = path.extname(cacheFilePath) === ".gz";
-    const content = () => isGzipped ? fs.gzip(code) : code;
-    const encoding = isGzipped ? null : "utf8";
+    const encoding = "utf8";
     const scopePath = options.pkgInfo.path;
 
-    fs.writeFileDefer(cacheFilePath, content, { encoding, scopePath });
+    fs.writeFileDefer(cacheFilePath, code, { encoding, scopePath });
   }
 
   return code;

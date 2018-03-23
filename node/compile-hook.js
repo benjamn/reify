@@ -25,7 +25,6 @@ function extWrap(func, pkgInfo, mod, filePath) {
     return func.call(this, mod, filePath);
   }
 
-  const isGzipped = path.extname(filePath) === ".gz";
   const cache = pkgInfo.cache;
   const cacheKey = fs.mtime(filePath);
   const cacheFilename = utils.getCacheFileName(filePath, cacheKey, pkgInfo);
@@ -34,9 +33,7 @@ function extWrap(func, pkgInfo, mod, filePath) {
 
   if (cacheValue === true) {
     const cacheFilePath = path.join(cachePath, cacheFilename);
-    cacheValue = isGzipped
-      ? fs.gunzip(fs.readFile(cacheFilePath), "utf8")
-      : fs.readFile(cacheFilePath, "utf8");
+    cacheValue = fs.readFile(cacheFilePath, "utf8");
 
   } else if (typeof cacheValue !== "string") {
     const options = {
@@ -46,10 +43,7 @@ function extWrap(func, pkgInfo, mod, filePath) {
       pkgInfo
     };
 
-    const content = isGzipped
-      ? fs.gunzip(fs.readFile(filePath), "utf8")
-      : fs.readFile(filePath, "utf8");
-
+    const content = fs.readFile(filePath, "utf8");
     cacheValue = compiler.compile(content, options);
   }
 

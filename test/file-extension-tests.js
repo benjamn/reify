@@ -1,5 +1,4 @@
 import assert from "assert";
-import { gzip } from "../node/fs.js";
 import { join } from "path";
 import {
   readFileSync,
@@ -20,13 +19,9 @@ describe("file extension", () => {
     assert.strictEqual(exported, "a");
   }
 
-  [".gz", ".js.gz", ".mjs.gz", ".mjs"].forEach((ext) => {
+  [".mjs"].forEach((ext) => {
     it(`compiles ${ext} files`, () => {
-      const modulePath = join(fixturePath, "a" + ext);
-      if (ext.includes(".gz")) {
-        writeFileSync(modulePath, gzip(content));
-      }
-      check(modulePath);
+      check(join(fixturePath, "a" + ext));
     });
   });
 });
