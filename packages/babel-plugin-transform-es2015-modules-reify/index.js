@@ -1,6 +1,19 @@
+var assert = require("assert");
 var namespace;
+var ibsPropertyName = "isBlockScoped";
 var types;
 var cache;
+
+function tryScopedLibDirect() {
+  namespace = require("@babel/types/lib/validators/isBlockScoped");
+
+  // If the above import succeeded, then we should replace the .default
+  // property of the isBlockScoped module, instead of .isBlockScoped.
+  ibsPropertyName = "default";
+
+  types = types || require("@babel/types");
+  cache = cache || require("@babel/traverse").default.cache;
+}
 
 function tryScoped() {
   namespace = require("@babel/types");
@@ -20,7 +33,8 @@ function tryUnscoped() {
   cache = cache || require("babel-traverse").default.cache;
 }
 
-[tryScoped,
+[tryScopedLibDirect,
+ tryScoped,
  tryScopedLib,
  tryUnscoped
 ].some(function (fn) {
@@ -30,14 +44,23 @@ function tryUnscoped() {
     return false;
   }
 
-  var ibs = namespace.isBlockScoped;
+  var wrapped = namespace[ibsPropertyName];
+  assert.strictEqual(typeof wrapped, "function")
 
   // Allow types.isBlockScoped to return true for import-related nodes.
-  namespace.isBlockScoped = function (node) {
+  var wrapper = namespace[ibsPropertyName] = function (node) {
     return node &&
       types.isImportDeclaration(node) ||
-      ibs.apply(this, arguments);
+      wrapped.apply(this, arguments);
   };
+
+  // The wrapping can fail if namespace[ibsPropertyName] is a non-writable
+  // property (such as a getter function).
+  if (namespace[ibsPropertyName] !== wrapper) {
+    throw new Error(
+      "Unable to patch @babel/types isBlockScoped function"
+    );
+  }
 
   return true;
 });
