@@ -31,7 +31,7 @@
     "test": "test/run.sh"
   },
   "dependencies": {
-    "acorn": "^5.2.1",
+    "acorn": "^5.5.3",
     "semver": "^5.4.1"
   },
   "devDependencies": {
