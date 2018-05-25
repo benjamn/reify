@@ -35,12 +35,12 @@
     "semver": "^5.4.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0-beta.40",
-    "@babel/preset-es2015": "^7.0.0-beta.40",
+    "@babel/core": "^7.0.0-beta.48",
+    "@babel/preset-es2015": "^7.0.0-beta.48",
     "babel-plugin-transform-es2015-modules-reify": "^0.16.0",
-    "babylon": "^7.0.0-beta.40",
-    "lodash": "^4.17.4",
-    "mocha": "^5.0.0",
-    "recast": "^0.14.1"
+    "babylon": "^7.0.0-beta.47",
+    "lodash": "^4.17.10",
+    "mocha": "^5.2.0",
+    "recast": "^0.14.7"
   }
 }
