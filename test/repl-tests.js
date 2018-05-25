@@ -49,7 +49,7 @@ describe("Node REPL", () => {
     );
   });
 
-  it("should work with non-global context", (done) => {
+  xit("should work with non-global context", (done) => {
     const r = repl.start({ useGlobal: false });
     const context = createContext({ module, require });
 
