@@ -49,7 +49,8 @@ describe("Node REPL", () => {
     );
   });
 
-  xit("should work with non-global context", (done) => {
+  (nodeMajorVersion === 10 ? xit : it)
+  ("should work with non-global context", (done) => {
     const r = repl.start({ useGlobal: false });
     const context = createContext({ module, require });
 
