@@ -4,7 +4,7 @@ import { transformFromAst } from "@babel/core";
 import { files } from "./all-files.js";
 import { parse } from "../lib/parsers/babylon.js";
 import reifyPlugin from "babel-plugin-transform-es2015-modules-reify";
-import es2015Preset from "@babel/preset-es2015";
+import envPreset from "@babel/preset-env";
 
 const filesToTest = Object.create(null);
 const methodNameRegExp =
@@ -45,7 +45,7 @@ describe("babel-plugin-transform-es2015-modules-reify", () => {
 
   Object.keys(filesToTest).forEach((relPath) => {
     const code = filesToTest[relPath];
-    const presets = [es2015Preset];
+    const presets = [envPreset];
     const plugins = [[reifyPlugin, {
       generateLetDeclarations: true
     }]];
