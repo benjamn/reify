@@ -1,4 +1,4 @@
-"use strict";module.export({default:()=>check});var strictEqual,deepEqual;module.watch(require("assert"),{strictEqual(v){strictEqual=v},deepEqual(v){deepEqual=v}},0);
+"use strict";module.export({default:()=>check});var strictEqual,deepEqual;module.link("assert",{strictEqual(v){strictEqual=v},deepEqual(v){deepEqual=v}},0);
 
 
 

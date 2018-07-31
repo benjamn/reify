@@ -8,7 +8,7 @@ import envPreset from "@babel/preset-env";
 
 const filesToTest = Object.create(null);
 const methodNameRegExp =
-  /\bmodule\d*\.(?:watch|import(?:Sync)|export(?:Default)?)\b/;
+  /\bmodule\d*\.(?:link|watch|import(?:Sync)|export(?:Default)?)\b/;
 
 Object.keys(files).forEach((absPath) => {
   const code = files[absPath];

@@ -1,5 +1,5 @@
 "use strict";module.export({check:()=>check});function check() {
-  "use strict";var strictEqual;module.watch(require("assert"),{strictEqual(v){strictEqual=v}},0);var a,b,c;module.watch(require("../misc/abc"),{a(v){a=v},b(v){b=v},c(v){c=v}},1);
+  "use strict";var strictEqual;module.link("assert",{strictEqual(v){strictEqual=v}},0);var a,b,c;module.link("../misc/abc",{a(v){a=v},b(v){b=v},c(v){c=v}},1);
 
 
 

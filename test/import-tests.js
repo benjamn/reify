@@ -97,7 +97,10 @@ describe("import declarations", () => {
     assert.strictEqual(b, o.b);
     assert.strictEqual(c, o.c);
     o.c = 4;
-    module.runSetters.call({ exports: o });
+    module.runSetters.call({
+      id: require.resolve("./cjs/module-exports-object.js"),
+      exports: o
+    });
     assert.strictEqual(c, 4);
 
     import { value, reset, add } from "./cjs/bridge.js";

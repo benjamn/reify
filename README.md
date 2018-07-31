@@ -39,12 +39,12 @@ examples. While you do not have to write this API by hand, it is designed
 to be easily human readable and writable, in part because that makes it
 easier to explain.
 
-I will explain the `Module.prototype.watch` method first, then the
+I will explain the `Module.prototype.link` method first, then the
 `Module.prototype.export` method after that. Note that this `Module` is
 the constructor of the CommonJS `module` object, and the `import` and
 `export` methods are custom additions to `Module.prototype`.
 
-### `module.watch(require(id), setters)`
+### `module.link(id, setters)`
 
 Here we go:
 
@@ -57,7 +57,7 @@ becomes
 ```js
 // Local symbols are declared as ordinary variables.
 let a, b, d;
-module.watch(require("./module"), {
+module.link("./module", {
   // The keys of this object literal are the names of exported symbols.
   // The values are setter functions that take new values and update the
   // local variables.
@@ -67,7 +67,7 @@ module.watch(require("./module"), {
 });
 ```
 
-All setter functions are called synchronously before `module.watch` returns,
+All setter functions are called synchronously before `module.link` returns,
 with whatever values are immediately available. However, when there are
 import cycles, some setter functions may be called again, when the exported
 values change. Calling these setter functions one or more times is the key
@@ -83,7 +83,7 @@ import * as utils from "./utils";
 becomes
 ```js
 let utils;
-module.watch(require("./utils"), {
+module.link("./utils", {
   "*"(ns) { utils = ns; }
 });
 ```
@@ -91,7 +91,7 @@ module.watch(require("./utils"), {
 Note that the `ns` object exposed here is `!== require("./utils")`, but
 instead a normalized view of the `require("./utils")` object. This
 approach ensures that the actual `exports` object is never exposed to the
-caller of `module.watch`.
+caller of `module.link`.
 
 Notice that this compilation strategy works equally well no matter where
 the `import` declaration appears:
@@ -106,7 +106,7 @@ becomes
 ```js
 if (condition) {
   let b;
-  module.watch(require("./c"), {
+  module.link("./c", {
     a(value) { b = value; }
   });
   console.log(b);
@@ -122,12 +122,12 @@ What about `export` declarations? One option would be to transform them into
 CommonJS code that updates the `exports` object, since interoperability
 with Node and CommonJS is certainly a goal of this approach.
 
-However, if `Module.prototype.watch` takes a `require(id)` object and a map
-of *setter* functions, then it seems natural for `Module.prototype.export`
-to be method that registers *getter* functions. Given these getter functions,
-whenever `module.watch(require(id), ...)` is called by a parent module, the
-getters for the `id` module will run, updating its `module.exports` object, so
-that the `module.watch` method has access to the latest exported values.
+However, if `Module.prototype.link` takes an `id` string and a map of
+*setter* functions, then it seems natural for `Module.prototype.export` to
+be method that registers *getter* functions. Given these getter functions,
+whenever `module.link(id, ...)` is called by a parent module, the getters
+for the `id` module will run, updating its `module.exports` object, so
+that the `module.link` method has access to the latest exported values.
 
 The `module.export` method is called with a single object literal whose
 keys are exported symbol names and whose values are getter functions for
@@ -149,7 +149,7 @@ const a = "a", b = "b", ...;
 ```
 
 This code registers getter functions for the variables `a`, `b`, ..., so
-that `module.watch` can easily retrieve the latest values of those
+that `module.link` can easily retrieve the latest values of those
 variables at any time. It's important that we register getter functions
 rather than storing computed values, so that other modules always can
 import the newest values.
@@ -280,7 +280,7 @@ export { a, b as c } from "./module";
 ```
 becomes
 ```js
-module.watch(require("./module"), {
+module.link("./module", {
   a(value) { exports.a = value; },
   b(value) { exports.c = value; },
 });
@@ -293,7 +293,7 @@ export * from "./module";
 ```
 becomes
 ```js
-module.watch(require("./module"), {
+module.link("./module", {
   "*"(ns) {
     Object.assign(exports, ns);
   }
@@ -304,7 +304,7 @@ Though this code gives the basic idea of how `export * from "..."` is
 handled, in reality Reify generates the following code:
 
 ```js
-module.watch(require("./module"), {
+module.link("./module", {
   "*": module.makeNsSetter()
 });
 ```
@@ -328,7 +328,7 @@ export * as ns from "./module";
 ```
 becomes
 ```js
-module.watch(require("./module"), {
+module.link("./module", {
   "*"(ns) { exports.ns = ns; }
 });
 ```
@@ -339,7 +339,7 @@ export a, { b, c as d } from "./module";
 ```
 becomes
 ```js
-module.watch(require("./module"), {
+module.link("./module", {
   default(value) { exports.a = value; },
   b(value) { exports.b = value; },
   c(value) { exports.d = value; }

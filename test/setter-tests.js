@@ -34,7 +34,7 @@ describe("parent setters", () => {
     let firstCallCount = 0;
     let secondCallCount = 0;
 
-    module.watch(require("./misc/live.js"), {
+    module.link("./misc/live.js", {
       value: (v) => {
         ++firstCallCount;
         value = "first:" + v;
@@ -48,7 +48,7 @@ describe("parent setters", () => {
     assert.strictEqual(value, "first:3");
     assert.strictEqual(secondCallCount, 0);
 
-    module.watch(require("./misc/live.js"), {
+    module.link("./misc/live.js", {
       value: (v) => {
         ++secondCallCount;
         value = "second:" + v;
@@ -70,7 +70,7 @@ describe("parent setters", () => {
     // mutable (see below).
     let value, set;
     let valueSetterCallCount = 0;
-    module.watch(require("./setter/fake-const.js"), {
+    module.link("./setter/fake-const.js", {
       value: v => {
         value = v;
         valueSetterCallCount += 1;

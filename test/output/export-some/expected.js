@@ -1,4 +1,4 @@
-"use strict";module.export({si:()=>cee,c:()=>c});module.watch(require("./abc"),{a(v){exports.a=v},b(v){exports.v=v}},0);var cee;module.watch(require("./abc.js"),{c(v){cee=v}},1);
+"use strict";module.export({si:()=>cee,c:()=>c});module.link("./abc",{a(v){exports.a=v},b(v){exports.v=v}},0);var cee;module.link("./abc.js",{c(v){cee=v}},1);
 
 
 
