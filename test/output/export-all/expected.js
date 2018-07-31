@@ -1,2 +1,2 @@
-"use strict";module.link("./abc",{"*":module.makeNsSetter()},0);
+"use strict";module.link("./abc",{"*":"*"},0);
 module.exportDefault("default");

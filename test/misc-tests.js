@@ -25,7 +25,7 @@ describe("spec compliance", () => {
     ns.checkNoDefault();
   });
 
-  it("... unless module.makeNsSetter(true) is used", () => {
+  it('... unless "*+" or module.makeNsSetter(true) is used', () => {
     import eff, * as ns from "./misc/export-all-with-default.js";
     assert.strictEqual(eff(), "eff");
     assert.strictEqual(ns.default, eff);
