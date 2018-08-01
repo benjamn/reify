@@ -35,9 +35,9 @@
     "semver": "^5.4.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0-beta.53",
-    "@babel/parser": "^7.0.0-beta.53",
-    "@babel/preset-env": "^7.0.0-beta.53",
+    "@babel/core": "^7.0.0-beta.55",
+    "@babel/parser": "^7.0.0-beta.55",
+    "@babel/preset-env": "^7.0.0-beta.55",
     "babel-plugin-transform-es2015-modules-reify": "^0.17.0",
     "babylon": "^7.0.0-beta.47",
     "lodash": "^4.17.10",
