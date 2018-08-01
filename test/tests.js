@@ -8,3 +8,4 @@ import "./file-extension-tests.js";
 import "./transform-tests.js";
 import "./babel-plugin-tests.js";
 import "./repl-tests.js";
+import "./hoisting-tests.js";
