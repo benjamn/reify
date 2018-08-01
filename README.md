@@ -286,6 +286,14 @@ module.link("./module", {
 });
 ```
 
+Since this pattern is so common, and no local variables need to be
+modified by these setter functions, the runtime API supports an
+alternative shorthand for re-exporting values:
+
+```js
+module.link("./module", { a: "a", b: "c" });
+```
+
 This strategy cleanly generalizes to `export * from "..."` declarations:
 
 ```js
@@ -300,27 +308,17 @@ module.link("./module", {
 });
 ```
 
-Though this code gives the basic idea of how `export * from "..."` is
-handled, in reality Reify generates the following code:
+Though the basic principle is the same, in reality the Reify compiler
+generates shorthand notation for this pattern as well:
 
 ```js
-module.link("./module", {
-  "*": module.makeNsSetter()
-});
+module.link("./module", { "*": "*" });
 ```
 
-The `module.makeNsSetter()` method call returns a function that takes a
-namespace object and copies its properties to `module.exports`. This
-version is better because
-
-1. the generated code is shorter,
-
-2. it doesn't rely on `Object.assign` (or a polyfill),
-
-3. it can be a little smarter about copying special properties such as
-   getters, and
-
-4. it reliably modifies `module.exports` instead of `exports`.
+This version is shorter, does not rely on `Object.assign` (or a polyfill),
+can be a little smarter about copying special properties such as getters,
+and reliably modifies `module.exports` instead of the `exports` variable
+(whatever it may be). Win!
 
 Exporting named namespaces ([proposal](https://github.com/leebyron/ecmascript-export-ns-from)):
 ```js
@@ -333,6 +331,12 @@ module.link("./module", {
 });
 ```
 
+Shorthand:
+
+```js
+module.link("./module", { "*": "ns" });
+```
+
 Re-exporting default exports ([proposal](https://github.com/leebyron/ecmascript-export-default-from)):
 ```js
 export a, { b, c as d } from "./module";
@@ -343,6 +347,16 @@ module.link("./module", {
   default(value) { exports.a = value; },
   b(value) { exports.b = value; },
   c(value) { exports.d = value; }
+});
+```
+
+Shorthand:
+
+```js
+module.link("./module", {
+  default: "a",
+  b: "b",
+  c: "d"
 });
 ```
 
