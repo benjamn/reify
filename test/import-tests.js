@@ -160,4 +160,9 @@ describe("import declarations", () => {
     assert.strictEqual(d, _d);
     assert.strictEqual(e, _e);
   });
+
+  it("`import module from ...` should work (issue #209)", () => {
+    import { childId } from "./import/issue-209/parent";
+    assert.strictEqual(childId, __dirname + "/import/issue-209/child.js");
+  });
 });
