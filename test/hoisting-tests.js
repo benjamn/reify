@@ -1,7 +1,8 @@
 import assert from "assert";
 
 describe("hoisted function declarations", () => {
-  it("should be accessible before evaluation finishes", () => {
+  // TODO Reenable this test when #211 is un-reverted.
+  xit("should be accessible before evaluation finishes", () => {
     import { a } from "./hoisting/a.js";
     import { b } from "./hoisting/b.js";
     assert.strictEqual(a(), b);
