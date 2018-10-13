@@ -24,7 +24,7 @@
     "node": ">=4"
   },
   "dependencies": {
-    "reify": "^0.5.1"
+    "reify": "^0.18.1"
   },
   "reify": {
     "parser": "reify/lib/parsers/babel.js"
