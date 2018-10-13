@@ -20,7 +20,7 @@ ln -s .. reify
 cd "$TEST_DIR"
 
 rm -rf .cache
-export REIFY_PARSER=babylon
+export REIFY_PARSER=babel
 
 mocha \
     --require "../node" \

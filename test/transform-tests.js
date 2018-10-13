@@ -31,10 +31,10 @@ describe("compiler.transform", () => {
     });
   }
 
-  it("gives the same results as compile with babylon", () => {
+  it("gives the same results as compile with @babel/parser", () => {
     check({
       ast: true,
-      parse: require("../lib/parsers/babylon.js").parse,
+      parse: require("../lib/parsers/babel.js").parse,
       reject: (relPath) => {
         return relPath === "export/extensions.js" ||
                relPath === "import/extensions.js" ||

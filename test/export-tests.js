@@ -4,7 +4,7 @@ import { Script } from "vm";
 let canUseClasses = false;
 let canUseDestructuring = false;
 let canUseLetConst = false;
-const canUseExportExtensions = process.env.REIFY_PARSER !== "babylon";
+const canUseExportExtensions = process.env.REIFY_PARSER !== "babel";
 
 try {
   // Test if Node supports class syntax.

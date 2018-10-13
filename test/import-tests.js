@@ -1,6 +1,6 @@
 import assert from "assert";
 
-const canUseImportExtensions = process.env.REIFY_PARSER !== "babylon";
+const canUseImportExtensions = process.env.REIFY_PARSER !== "babel";
 
 describe("import declarations", () => {
   it("should work in nested scopes", () => {

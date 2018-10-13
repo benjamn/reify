@@ -7,7 +7,7 @@ Example package using a different cache directory than the default:
 ## Installation
 
 ```sh
-cd packages/babylon-example
+cd packages/babel-parser-example
 npm install
 ```
 

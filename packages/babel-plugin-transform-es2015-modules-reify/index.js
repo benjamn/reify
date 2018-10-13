@@ -67,7 +67,7 @@ function tryUnscoped() {
 
 module.exports = function (context) {
   var compiler = require("reify/lib/compiler.js");
-  var parse = require("reify/lib/parsers/babylon.js").parse;
+  var parse = require("reify/lib/parsers/babel.js").parse;
 
   return {
     visitor: {
