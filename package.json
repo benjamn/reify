@@ -41,6 +41,6 @@
     "babel-plugin-transform-es2015-modules-reify": "^0.18.0",
     "lodash": "^4.17.11",
     "mocha": "^5.2.0",
-    "recast": "^0.15.5"
+    "recast": "^0.16.0"
   }
 }
