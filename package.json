@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "acorn": "^5.5.3",
-    "semver": "^5.4.1"
+    "semver": "^6.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.1.2",
