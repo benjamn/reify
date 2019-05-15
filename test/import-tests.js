@@ -48,31 +48,30 @@ describe("import declarations", () => {
   });
 
   it("should support braceless-if nested imports", () => {
-    assert.strictEqual(typeof x, "undefined");
     for (let i = 0; i < 3; ++i) {
-      if (i === 0) import { a as x } from "./misc/abc";
-      else if (i === 1) import { b as x } from "./misc/abc";
-      else import { c as x } from "./misc/abc";
-      assert.strictEqual(x, ["a", "b", "c"][i]);
+      if (i === 0) import { a as xa } from "./misc/abc";
+      else if (i === 1) import { b as xb } from "./misc/abc";
+      else import { c as xc } from "./misc/abc";
+      if (i === 0) assert.strictEqual(xa, "a");
+      if (i === 1) assert.strictEqual(xb, "b");
+      if (i === 2) assert.strictEqual(xc, "c");
     }
-    assert.strictEqual(x, "c");
   });
 
   it("should support braceless-while nested imports", () => {
-    var i = 0, x;
+    var i = 0;
     while (i++ === 0) import { a as x } from "./misc/abc";
     assert.strictEqual(x, "a");
   });
 
   it("should support braceless-do-while nested imports", () => {
-    var x;
     do import { b as x } from "./misc/abc";
     while (false);
     assert.strictEqual(x, "b");
   });
 
   it("should support braceless-for-in nested imports", () => {
-    for (var x in { a: 123 })
+    for (var key in { a: 123 })
       import { c as x } from "./misc/abc";
     assert.strictEqual(x, "c");
   });

@@ -216,22 +216,18 @@ describe("export declarations", () => {
   });
 
   it("should support switch-case nested imports", () => {
-    assert.strictEqual(typeof x, "undefined");
-
     for (let i = 0; i < 2; ++i) {
       switch (i) {
       case 0:
-        import { a as x } from "./misc/abc";
+        import { a as xa } from "./misc/abc";
+        assert.strictEqual(xa, "a");
         break;
       case 1:
-        import { b as x } from "./misc/abc";
+        import { b as xb } from "./misc/abc";
+        assert.strictEqual(xb, "b");
         break;
       }
-
-      assert.strictEqual(x, i ? "b": "a");
     }
-
-    assert.strictEqual(x, "b");
   });
 
   (canUseDestructuring ? it : xit)(

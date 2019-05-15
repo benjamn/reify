@@ -8,7 +8,7 @@ import envPreset from "@babel/preset-env";
 
 const filesToTest = Object.create(null);
 const methodNameRegExp =
-  /\bmodule\d*\.(?:link|watch|import(?:Sync)|export(?:Default)?)\b/;
+  /\bmodule\d*(?:\.link\b|\.export(?:Default)?\b|\["export"\])/;
 
 Object.keys(files).forEach((absPath) => {
   const code = files[absPath];
@@ -39,7 +39,7 @@ describe("babel-plugin-transform-es2015-modules-reify", () => {
     const ast = parse(code);
     delete ast.tokens;
     const result = transformFromAst(ast, code, options);
-    assert.ok(methodNameRegExp.test(result.code));
+    assert.ok(methodNameRegExp.test(result.code), result.code);
     return result;
   }
 
