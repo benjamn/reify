@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "acorn": "^6.1.1",
+    "acorn-dynamic-import": "^4.0.0",
     "semver": "^5.4.1"
   },
   "devDependencies": {

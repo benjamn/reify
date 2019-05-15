@@ -1,4 +1,5 @@
-const assert = require("assert");
+import assert from "assert";
+import { compile } from "../lib/compiler.js";
 
 function isUseStrictExprStmt(stmt) {
   return stmt.type === "ExpressionStatement" &&
@@ -53,8 +54,6 @@ describe("compiler", () => {
   });
 
   it("should transform AST when options.ast truthy", () => {
-    import { compile } from "../lib/compiler.js";
-
     function isVarDecl(node, names) {
       assert.strictEqual(node.type, "VariableDeclaration");
       assert.deepEqual(node.declarations.map((decl) => decl.id.name), names);
@@ -97,8 +96,6 @@ describe("compiler", () => {
   });
 
   it("should respect options.enforceStrictMode", () => {
-    import { compile } from "../lib/compiler.js";
-
     const source = 'import "a"';
 
     const withoutStrict = compile(source, {
@@ -123,8 +120,6 @@ describe("compiler", () => {
   });
 
   it("should always generate arrow functions", () => {
-    import { compile } from "../lib/compiler.js";
-
     assert.ok(compile([
       'import def from "mod"',
       "export { def as x }"
@@ -132,8 +127,6 @@ describe("compiler", () => {
   });
 
   it("should respect options.generateLetDeclarations", () => {
-    import { compile } from "../lib/compiler.js";
-
     const source = 'import foo from "./foo"';
 
     const withLet = compile(source, {
@@ -158,7 +151,6 @@ describe("compiler", () => {
   });
 
   it("should allow pre-parsed ASTs via options.parse", () => {
-    import { compile } from "../lib/compiler.js";
     import { parse } from "../lib/parsers/default.js";
 
     const code = 'import foo from "./foo"';
@@ -177,8 +169,6 @@ describe("compiler", () => {
   });
 
   it("should respect options.sourceType", () => {
-    import { compile } from "../lib/compiler.js";
-
     const source = "1+2;";
 
     const moduleType = compile(source, {
@@ -215,8 +205,6 @@ describe("compiler", () => {
   });
 
   it("should transform default export declaration to expression", () => {
-    import { compile } from "../lib/compiler.js";
-
     function parse(code) {
       const result = compile(code, { ast: true });
       let ast = result.ast;
@@ -256,8 +244,6 @@ describe("compiler", () => {
   });
 
   it("should not get confused by shebang", () => {
-    import { compile } from "../lib/compiler.js";
-
     const code = [
       "#!/usr/bin/env node -r reify",
       'import foo from "./foo"',
@@ -268,8 +254,6 @@ describe("compiler", () => {
   });
 
   it("should preserve crlf newlines", () => {
-    import { compile } from "../lib/compiler.js";
-
     const code = [
       "import {",
       "  strictEqual,",
@@ -281,5 +265,83 @@ describe("compiler", () => {
 
     const result = compile(code).code;
     assert.ok(result.endsWith("\r\n".repeat(5)));
+  });
+
+  it("should compile dynamic import(...)", () => {
+    function check(optionValue, source, expected) {
+      assert.strictEqual(
+        compile(source, {
+          enforceStrictMode: false,
+          dynamicImport: optionValue
+        }).code,
+        expected
+      );
+    }
+
+    check(
+      void 0,
+      "import(x)",
+      "import(x)"
+    );
+
+    check(
+      false,
+      "import(x)",
+      "import(x)"
+    );
+
+    check(
+      true,
+      "import(x)",
+      "module.dynamicImport(x)"
+    );
+
+    check(
+      "dynamicImport",
+      "import(x)",
+      "module.dynamicImport(x)"
+    );
+
+    check(
+      "_import",
+      "import(x)",
+      "module._import(x)"
+    );
+
+    check(
+      true,
+      "import (x)",
+      "module.dynamicImport (x)"
+    );
+
+    check(
+      true,
+      [
+        "import(function () {",
+        "  return getId();",
+        "}())",
+      ].join("\n"),
+      [
+        "module.dynamicImport(function () {",
+        "  return getId();",
+        "}())",
+      ].join("\n")
+    );
+
+    check(true, [
+      "import(",
+      "  id",
+      ")",
+    ].join("\n"), [
+      "module.dynamicImport(",
+      "  id",
+      ")",
+    ].join("\n"));
+
+    check(
+      true,
+      "import(`\nid\n`)",
+      "module.dynamicImport(`\nid\n`)"
+    );
   });
 });
