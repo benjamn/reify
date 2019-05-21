@@ -38,7 +38,7 @@
   "devDependencies": {
     "@babel/core": "7.4.5",
     "@babel/parser": "7.4.5",
-    "@babel/preset-env": "7.4.4",
+    "@babel/preset-env": "7.4.5",
     "babel-plugin-transform-es2015-modules-reify": "0.19.0",
     "lodash": "4.17.11",
     "mocha": "6.1.4",
