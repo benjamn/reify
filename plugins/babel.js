@@ -73,9 +73,11 @@ module.exports = function (context) {
     parse: require("../lib/parsers/babel.js").parse
   };
 
+  let madeChanges = false;
   function transform(node) {
     const result = compiler.transform(node, transformOptions);
     if (! result.identical) {
+      madeChanges = true;
       // If the Reify compiler made any changes, invalidate all existing
       // Scope objects, so that any variable binding changes made by
       // compiler.transform will be reflected accurately.
@@ -101,6 +103,13 @@ module.exports = function (context) {
           const ast = transform(path.node).ast;
           assert.strictEqual(ast.type, "Program");
 
+          if (! madeChanges || transformOptions.moduleAlias === "module") {
+            return;
+          }
+
+          // If we need to rename the module identifier to the value of
+          // transformOptions.moduleAlias, we wrap the module body with an
+          // immediately invoked function expression.
           ast.body = [
             types.callExpression(
               types.memberExpression(
