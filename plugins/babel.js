@@ -1,8 +1,10 @@
-var assert = require("assert");
-var namespace;
-var ibsPropertyName = "isBlockScoped";
-var types;
-var cache;
+"use strict";
+
+const assert = require("assert");
+let namespace;
+let ibsPropertyName = "isBlockScoped";
+let types;
+let cache;
 
 function tryScopedLibDirect() {
   namespace = require("@babel/types/lib/validators/isBlockScoped");
@@ -44,11 +46,11 @@ function tryUnscoped() {
     return false;
   }
 
-  var wrapped = namespace[ibsPropertyName];
+  const wrapped = namespace[ibsPropertyName];
   assert.strictEqual(typeof wrapped, "function")
 
   // Allow types.isBlockScoped to return true for import-related nodes.
-  var wrapper = namespace[ibsPropertyName] = function (node) {
+  const wrapper = namespace[ibsPropertyName] = function (node) {
     return node &&
       types.isImportDeclaration(node) ||
       wrapped.apply(this, arguments);
@@ -66,32 +68,57 @@ function tryUnscoped() {
 });
 
 module.exports = function (context) {
-  var compiler = require("../lib/compiler.js");
-  var parse = require("../lib/parsers/babel.js").parse;
+  const compiler = require("../lib/compiler.js");
+  const transformOptions = {
+    parse: require("../lib/parsers/babel.js").parse
+  };
+
+  function transform(node) {
+    const result = compiler.transform(node, transformOptions);
+    if (! result.identical) {
+      // If the Reify compiler made any changes, invalidate all existing
+      // Scope objects, so that any variable binding changes made by
+      // compiler.transform will be reflected accurately.
+      cache.clearScope();
+    }
+    return result;
+  }
 
   return {
     visitor: {
-      Program: function (path) {
-        var transformOptions = {
-          parse: parse
-        };
+      Program: {
+        enter(path) {
+          const code = path.hub.file.code;
+          if (typeof code === "string") {
+            transformOptions.moduleAlias =
+              compiler.makeUniqueId("module", code);
+          }
+          Object.assign(transformOptions, this.opts);
+          transform(path.node);
+        },
 
-        var code = path.hub.file.code;
-        if (typeof code === "string") {
-          transformOptions.moduleAlias =
-            compiler.makeUniqueId("module", code);
-        }
+        exit(path) {
+          const ast = transform(path.node).ast;
+          assert.strictEqual(ast.type, "Program");
 
-        var result = compiler.transform(
-          path.node,
-          Object.assign(transformOptions, this.opts)
-        );
-
-        // If the Reify compiler made any changes, invalidate all existing
-        // Scope objects, so that any variable binding changes made by
-        // compiler.transform will be reflected accurately.
-        if (! result.identical) {
-          cache.clearScope();
+          ast.body = [
+            types.callExpression(
+              types.memberExpression(
+                types.parenthesizedExpression(
+                  types.functionExpression(
+                    null,
+                    [types.identifier(transformOptions.moduleAlias)],
+                    types.blockStatement(ast.body)
+                  )
+                ),
+                types.identifier("call")
+              ),
+              [
+                types.thisExpression(),
+                types.identifier("module"),
+              ]
+            )
+          ];
         }
       }
     }
