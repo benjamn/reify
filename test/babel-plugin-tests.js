@@ -5,6 +5,8 @@ import { files } from "./all-files.js";
 import { parse } from "../lib/parsers/babel.js";
 import reifyPlugin from "../plugins/babel.js";
 import envPreset from "@babel/preset-env";
+import runtimeTransform from "@babel/plugin-transform-runtime";
+import Visitor from "../lib/visitor.js";
 
 const filesToTest = Object.create(null);
 const methodNameRegExp =
@@ -34,28 +36,60 @@ Object.keys(files).forEach((absPath) => {
   filesToTest[relPath] = code;
 });
 
+function fail(path) {
+  throw new Error("unexpected node of type " + path.getNode().type);
+}
+
+class ImportExportChecker extends Visitor {
+  visitImportDeclaration(path) { fail(path) }
+  visitExportAllDeclaration(path) { fail(path) }
+  visitExportDefaultDeclaration(path) { fail(path) }
+  visitExportNamedDeclaration(path) { fail(path) }
+}
+
 describe("reify/plugins/babel", () => {
   function check(code, options) {
     const ast = parse(code);
     delete ast.tokens;
     const result = transformFromAst(ast, code, options);
     assert.ok(methodNameRegExp.test(result.code), result.code);
+    new ImportExportChecker().visit(parse(result.code));
     return result;
   }
 
   Object.keys(filesToTest).forEach((relPath) => {
     const code = filesToTest[relPath];
-    const presets = [envPreset];
-    const plugins = [[reifyPlugin, {
-      generateLetDeclarations: true
-    }]];
+
+    const presets = [
+      [envPreset, {
+        targets: {
+          ie: 11
+        }
+      }]
+    ];
+
+    const pluginsReifyFirst = [
+      [reifyPlugin, {
+        generateLetDeclarations: true
+      }],
+      runtimeTransform,
+    ];
+
+    const pluginsReifyLast = [
+      [reifyPlugin, {
+        generateLetDeclarations: true
+      }],
+      runtimeTransform,
+    ];
 
     it(`compiles ${relPath}`, () => {
-      check(code, { plugins });
+      check(code, { plugins: pluginsReifyFirst });
+      check(code, { plugins: pluginsReifyLast });
     });
 
     it(`compiles ${relPath} with es2015`, () => {
-      check(code, { plugins, presets });
+      check(code, { plugins: pluginsReifyFirst, presets });
+      check(code, { plugins: pluginsReifyLast, presets });
     });
   });
 });
