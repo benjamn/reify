@@ -3,7 +3,7 @@ import { relative } from "path";
 import { transformFromAst } from "@babel/core";
 import { files } from "./all-files.js";
 import { parse } from "../lib/parsers/babel.js";
-import reifyPlugin from "babel-plugin-transform-es2015-modules-reify";
+import reifyPlugin from "../plugins/babel.js";
 import envPreset from "@babel/preset-env";
 
 const filesToTest = Object.create(null);
@@ -34,7 +34,7 @@ Object.keys(files).forEach((absPath) => {
   filesToTest[relPath] = code;
 });
 
-describe("babel-plugin-transform-es2015-modules-reify", () => {
+describe("reify/plugins/babel", () => {
   function check(code, options) {
     const ast = parse(code);
     delete ast.tokens;
