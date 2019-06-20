@@ -317,4 +317,9 @@ describe("export declarations", () => {
       "from-ordering-c.js",
     ]);
   });
+
+  it("should be tolerant of exporting undeclared identifiers", () => {
+    import { GlobalArray } from "./undeclared-export.js";
+    assert.strictEqual(GlobalArray, Array);
+  });
 });
