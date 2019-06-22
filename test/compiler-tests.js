@@ -144,6 +144,61 @@ describe("compiler", () => {
     assert.ok(defaultLet.startsWith('"use strict";var foo;'));
   });
 
+  it("should respect options.avoidModernSyntax", () => {
+    const source = [
+      'import foo from "./foo";',
+      'export { foo as bar };',
+      'const fooPlusOne = foo + 1;',
+      'export default fooPlusOne;',
+    ].join("\n");
+
+    const legacy = compile(source, {
+      avoidModernSyntax: true
+    }).code;
+
+    assert.strictEqual(legacy, [
+      '"use strict";module.export({bar:function(){return foo}});var foo;module.link("./foo",{default:function(v){foo=v}},0);',
+      "",
+      "const fooPlusOne = foo + 1;",
+      "module.exportDefault(fooPlusOne);",
+    ].join("\n"));
+
+    const legacyIgnoresLetOption = compile(source, {
+      avoidModernSyntax: true,
+      // Ignored because let declarations are "modern" syntax.
+      generateLetDeclarations: true
+    }).code;
+    assert.strictEqual(legacy, legacyIgnoresLetOption);
+
+    const modernImplicit = compile(source, {
+      generateLetDeclarations: true
+    }).code;
+
+    const modernExplicit = compile(source, {
+      generateLetDeclarations: true,
+      avoidModernSyntax: false
+    }).code;
+
+    assert.strictEqual(modernImplicit, modernExplicit);
+    assert.strictEqual(modernExplicit, [
+      '"use strict";module.export({bar:()=>foo});let foo;module.link("./foo",{default(v){foo=v}},0);',
+      "",
+      "const fooPlusOne = foo + 1;",
+      "module.exportDefault(fooPlusOne);",
+    ].join("\n"));
+
+    const modernWithoutLet = compile(source, {
+      avoidModernSyntax: false
+    }).code;
+
+    assert.strictEqual(modernWithoutLet, [
+      '"use strict";module.export({bar:()=>foo});var foo;module.link("./foo",{default(v){foo=v}},0);',
+      "",
+      "const fooPlusOne = foo + 1;",
+      "module.exportDefault(fooPlusOne);",
+    ].join("\n"));
+  });
+
   it("should allow pre-parsed ASTs via options.parse", () => {
     import { parse } from "../lib/parsers/default.js";
 
