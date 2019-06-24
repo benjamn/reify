@@ -48,6 +48,44 @@ class ImportExportChecker extends Visitor {
 }
 
 describe("reify/plugins/babel", () => {
+  it("should not double-wrap module.runSetters expressions", () => {
+    const code = [
+      'import x from "./y";',
+      'export let z = x + 1;',
+      'const { a, ...rest } = { a: x };',
+      'eval("++z");',
+    ].join("\n");
+
+    function check(plugins) {
+      const ast = parse(code);
+      delete ast.tokens;
+      const result = transformFromAst(ast, code, {
+        plugins: plugins,
+        presets: [
+          [envPreset, {
+            targets: {
+              ie: 11
+            }
+          }]
+        ]
+      });
+      assert.strictEqual(
+        result.code.split("runSetters").length, 2,
+        result.code
+      );
+    }
+
+    check([
+      reifyPlugin,
+      runtimeTransform,
+    ]);
+
+    check([
+      runtimeTransform,
+      reifyPlugin,
+    ]);
+  });
+
   function check(code, options) {
     const ast = parse(code);
     delete ast.tokens;
