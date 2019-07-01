@@ -95,39 +95,15 @@ module.exports = function (context) {
             transformOptions.moduleAlias =
               compiler.makeUniqueId("module", code);
           }
+          transformOptions.finalCompilationPass = false;
           Object.assign(transformOptions, this.opts);
           transform(path.node);
         },
 
         exit(path) {
+          transformOptions.finalCompilationPass = true;
           const ast = transform(path.node).ast;
           assert.strictEqual(ast.type, "Program");
-
-          if (! madeChanges || transformOptions.moduleAlias === "module") {
-            return;
-          }
-
-          // If we need to rename the module identifier to the value of
-          // transformOptions.moduleAlias, we wrap the module body with an
-          // immediately invoked function expression.
-          ast.body = [
-            types.callExpression(
-              types.memberExpression(
-                types.parenthesizedExpression(
-                  types.functionExpression(
-                    null,
-                    [types.identifier(transformOptions.moduleAlias)],
-                    types.blockStatement(ast.body)
-                  )
-                ),
-                types.identifier("call")
-              ),
-              [
-                types.thisExpression(),
-                types.identifier("module"),
-              ]
-            )
-          ];
         }
       }
     }
