@@ -224,25 +224,25 @@ describe("compiler", () => {
       sourceType: "module"
     }).code;
 
-    assert.ok(moduleType.startsWith('"use strict"'));
+    assert.ok(moduleType.startsWith('"use strict"'), moduleType);
 
     const unambiguousAsCJS = compile(source, {
       sourceType: "unambiguous"
     }).code;
 
-    assert.ok(! unambiguousAsCJS.startsWith('"use strict"'));
+    assert.ok(! unambiguousAsCJS.startsWith('"use strict"'), unambiguousAsCJS);
 
     const unambiguousAsESM = compile('import "a"\n' + source, {
       sourceType: "unambiguous"
     }).code;
 
-    assert.ok(unambiguousAsESM.startsWith('"use strict"'));
+    assert.ok(unambiguousAsESM.startsWith('"use strict"'), unambiguousAsESM);
 
     const scriptType = compile('import "a"\n' + source, {
       sourceType: "script"
     }).code;
 
-    assert.ok(scriptType.startsWith('import "a"'));
+    assert.ok(scriptType.startsWith('"use strict";module.link("a")'), scriptType);
 
     // No options.sourceType is the same as
     // { sourceType: "unambiguous" }.
@@ -250,7 +250,7 @@ describe("compiler", () => {
       source
     ).code;
 
-    assert.ok(! defaultType.startsWith('"use strict"'));
+    assert.ok(! defaultType.startsWith('"use strict"'), defaultType);
   });
 
   it("should transform default export declaration to expression", () => {
