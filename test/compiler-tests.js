@@ -29,7 +29,11 @@ describe("compiler", () => {
     }
 
     assert.ok(error instanceof SyntaxError);
-    assert.ok(/unexpected/i.test(error.message));
+    assert.ok(
+      /unexpected/i.test(error.message) ||
+      /Cannot use import /i.test(error.message),
+      error,
+    );
   });
 
   it("should be enabled for packages that depend on reify", () => {
