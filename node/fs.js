@@ -8,32 +8,8 @@ const zlib = require("zlib");
 const FastObject = require("../lib/fast-object.js");
 const SemVer = require("semver");
 
-const fsBinding = (() => {
-  try {
-    return process.binding("fs");
-  } catch (e) {}
-  return Object.create(null);
-})();
-
-const internalModuleReadFile = fsBinding.internalModuleReadFile;
-const internalModuleStat = fsBinding.internalModuleStat;
-const internalStat = fsBinding.stat;
-const internalStatValues = fsBinding.getStatValues;
-
-let useIsDirectoryFastPath = typeof internalModuleStat === "function";
-let useReadFileFastPath = typeof internalModuleReadFile === "function";
-let useMtimeFastPath = typeof internalStat === "function" &&
-  SemVer.satisfies(process.version, "^6.10.1||^7.7");
-
 let pendingWriteTimer = null;
 const pendingWrites = new FastObject;
-
-let statValues;
-if (useMtimeFastPath) {
-  statValues = typeof internalStatValues === "function"
-    ? internalStatValues()
-    : new Float64Array(14);
-}
 
 function fallbackIsDirectory(filePath) {
   try {
@@ -63,16 +39,6 @@ function streamToBuffer(stream, bufferOrString) {
 }
 
 function isDirectory(thepath) {
-  if (useIsDirectoryFastPath) {
-    try {
-      // Used to speed up loading. Returns 0 if the path refers to a file,
-      // 1 when it's a directory or < 0 on error (usually ENOENT). The speedup
-      // comes from not creating thousands of Stat and Error objects.
-      return internalModuleStat(thepath) === 1;
-    } catch (e) {
-      useIsDirectoryFastPath = false;
-    }
-  }
   return fallbackIsDirectory(thepath);
 }
 
@@ -102,24 +68,6 @@ function mkdirp(dirPath, scopePath) {
 exports.mkdirp = mkdirp;
 
 function mtime(filePath) {
-  if (useMtimeFastPath) {
-    try {
-      // Used to speed up file stats. Modifies the `statValues` typed array,
-      // with index 11 being the mtime milliseconds stamp. The speedup comes
-      // from not creating Stat objects.
-      if (useInternalStatValues) {
-        internalStat(filePath);
-      } else {
-        internalStat(filePath, statValues);
-      }
-      return statValues[11];
-    } catch (e) {
-      if (e.code === "ENOENT") {
-        return -1;
-      }
-      useMtimeFastPath = false;
-    }
-  }
   return fallbackMtime(filePath);
 }
 
@@ -135,19 +83,6 @@ function readdir(dirPath) {
 exports.readdir = readdir;
 
 function readFile(filePath, options) {
-  const encoding = utils.isObject(options) ? options.encoding : options;
-
-  if (useReadFileFastPath && encoding === "utf8") {
-    try {
-      // Used to speed up reading. Returns the contents of the file as a string
-      // or undefined when the file cannot be opened. The speedup comes from not
-      // creating Error objects on failure.
-      const content = internalModuleReadFile(filePath);
-      return content === void 0 ? null : content;
-    } catch (e) {
-      useReadFileFastPath = false;
-    }
-  }
   return fallbackReadFile(filePath, options);
 }
 
