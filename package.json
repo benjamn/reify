@@ -43,6 +43,6 @@
     "@babel/preset-env": "7.5.0",
     "lodash": "4.17.19",
     "mocha": "6.1.4",
-    "recast": "0.18.1"
+    "recast": "0.20.4"
   }
 }
