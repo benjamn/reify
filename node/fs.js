@@ -6,7 +6,6 @@ const utils = require("../lib/utils.js");
 const zlib = require("zlib");
 
 const FastObject = require("../lib/fast-object.js");
-const SemVer = require("semver");
 
 let pendingWriteTimer = null;
 const pendingWrites = new FastObject;
