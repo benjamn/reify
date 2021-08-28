@@ -7,7 +7,7 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/benjamn/reify/tree/master/packages/top-level-example"
+    "url": "https://github.com/benjamn/reify/tree/main/packages/top-level-example"
   },
   "keywords": [
     "reify",
