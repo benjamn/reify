@@ -1,6 +1,6 @@
 # The case for nested `import` declarations
 
-Official ECMA262 [proposal](https://github.com/benjamn/reify/blob/master/PROPOSAL.md).
+Official ECMA262 [proposal](https://github.com/benjamn/reify/blob/main/PROPOSAL.md).
 
 ## Context
 
@@ -450,7 +450,7 @@ There is definitely some merit to this argument, but I want to spend a
 moment understanding exactly what it would mean to change the spec, if
 that's what we decide to do.
 
-**Edit:** [Here](https://github.com/benjamn/reify/blob/master/PROPOSAL.md) is my
+**Edit:** [Here](https://github.com/benjamn/reify/blob/main/PROPOSAL.md) is my
 official proposal, and [here](https://github.com/tc39/ecma262/pull/646) is the
 pull request I have submitted to https://github.com/tc39/ecma262. The rest of
 this section is preserved for posterity.
