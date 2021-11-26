@@ -34,6 +34,7 @@
     "acorn": "^6.1.1",
     "acorn-dynamic-import": "^4.0.0",
     "magic-string": "^0.25.3",
+    "periscopic": "^2.0.3",
     "semver": "^5.4.1"
   },
   "devDependencies": {
