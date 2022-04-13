@@ -34,7 +34,7 @@
     "acorn": "^6.1.1",
     "acorn-dynamic-import": "^4.0.0",
     "magic-string": "^0.25.3",
-    "semver": "^5.4.1"
+    "semver": "^7.3.7"
   },
   "devDependencies": {
     "@babel/core": "7.16.0",
