@@ -92,3 +92,9 @@ describe("object-like module.exports", () => {
     assert.strictEqual(typeof forEach, "function");
   });
 });
+
+describe("setEsModule", () => {
+  it("should not error if __esModule is set before or after setEsModule is called", () => {
+    import './misc/__esModule-export-after';
+  });
+});
